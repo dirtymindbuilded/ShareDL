@@ -14,7 +14,6 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        // Only build native libraries for modern 64-bit Android devices
         ndk {
             abiFilters.clear()
             abiFilters += "arm64-v8a"
@@ -29,11 +28,11 @@ android {
         }
 
         release {
-            // Enable code shrinking and optimization
             isMinifyEnabled = true
-
-            // Remove unused resources
             isShrinkResources = true
+
+            // Sign the Release APK so it can be installed on Android
+            signingConfig = signingConfigs.getByName("debug")
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
