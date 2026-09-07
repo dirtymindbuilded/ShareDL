@@ -15,7 +15,6 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.yausername.ffmpeg.FFmpeg
-import com.yausername.youtubedl_android.UpdateChannel
 import com.yausername.youtubedl_android.YoutubeDL
 import java.util.concurrent.Executors
 
@@ -65,7 +64,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-
         setIntent(intent)
 
         val sharedUrl = extractSharedUrl(intent) ?: return
@@ -85,7 +83,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun requestNotificationPermission() {
-
         if (
             Build.VERSION.SDK_INT >= 33 &&
             ContextCompat.checkSelfPermission(
@@ -106,7 +103,6 @@ class MainActivity : AppCompatActivity() {
             var errorMessage: String? = null
 
             try {
-
                 YoutubeDL.getInstance().init(applicationContext)
 
                 FFmpeg.getInstance().init(applicationContext)
@@ -115,22 +111,14 @@ class MainActivity : AppCompatActivity() {
                     statusText.text = "Updating yt-dlp..."
                 }
 
-                /*
-                 * Download the latest stable yt-dlp version.
-                 *
-                 * This prevents the:
-                 * "yt-dlp version is older than 90 days"
-                 * error.
-                 */
                 YoutubeDL.getInstance().updateYoutubeDL(
                     applicationContext,
-                    UpdateChannel.STABLE
+                    YoutubeDL.UpdateChannel.STABLE
                 )
 
             } catch (e: Throwable) {
-
-                errorMessage = e.message ?: "Unknown engine error"
-
+                errorMessage =
+                    e.message ?: "Unknown engine error"
             }
 
             runOnUiThread {
@@ -143,18 +131,8 @@ class MainActivity : AppCompatActivity() {
                 downloadButton.isEnabled = true
 
                 if (errorMessage == null) {
-
-                    statusText.text =
-                        "Download engine ready"
-
+                    statusText.text = "Download engine ready"
                 } else {
-
-                    /*
-                     * Do not completely block the app if the update
-                     * server is temporarily unavailable.
-                     *
-                     * A previously updated local yt-dlp may still work.
-                     */
                     statusText.text =
                         "Engine ready (update unavailable)"
 
@@ -181,7 +159,6 @@ class MainActivity : AppCompatActivity() {
     private fun startDownloadFromInput() {
 
         if (!engineReady) {
-
             Toast.makeText(
                 this,
                 "Please wait for yt-dlp to finish updating",
@@ -198,7 +175,6 @@ class MainActivity : AppCompatActivity() {
                 .orEmpty()
 
         if (!isLikelyUrl(url)) {
-
             Toast.makeText(
                 this,
                 "Enter a valid http/https URL",
@@ -219,20 +195,15 @@ class MainActivity : AppCompatActivity() {
         finishAfterStart: Boolean
     ) {
 
-        val choices =
-            Quality.entries.toTypedArray()
+        val choices = Quality.entries.toTypedArray()
 
         AlertDialog.Builder(this)
             .setTitle("Download quality")
-
             .setItems(
-                choices.map {
-                    it.label
-                }.toTypedArray()
+                choices.map { it.label }.toTypedArray()
             ) { _, which ->
 
-                val selected =
-                    choices[which]
+                val selected = choices[which]
 
                 DownloadService.start(
                     this,
@@ -253,23 +224,16 @@ class MainActivity : AppCompatActivity() {
                     finish()
                 }
             }
-
-            .setNegativeButton(
-                "Cancel"
-            ) { _, _ ->
-
+            .setNegativeButton("Cancel") { _, _ ->
                 if (finishAfterStart) {
                     finish()
                 }
             }
-
             .setOnCancelListener {
-
                 if (finishAfterStart) {
                     finish()
                 }
             }
-
             .show()
     }
 
@@ -285,9 +249,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val text =
-            intent.getStringExtra(
-                Intent.EXTRA_TEXT
-            )
+            intent.getStringExtra(Intent.EXTRA_TEXT)
                 ?.trim()
                 .orEmpty()
 
@@ -295,16 +257,9 @@ class MainActivity : AppCompatActivity() {
             Regex("https?://\\S+")
                 .find(text)
                 ?.value
-                ?.trimEnd(
-                    '.',
-                    ',',
-                    ')',
-                    ']'
-                )
+                ?.trimEnd('.', ',', ')', ']')
 
-        return url?.takeIf(
-            ::isLikelyUrl
-        )
+        return url?.takeIf(::isLikelyUrl)
     }
 
     private fun isLikelyUrl(
@@ -321,9 +276,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-
         executor.shutdown()
-
         super.onDestroy()
     }
 }
