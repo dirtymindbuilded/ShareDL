@@ -1,16 +1,19 @@
-name: Build Android APK
+name: Build ShareDL Release APK
 
 on:
   push:
     branches:
       - main
+
   workflow_dispatch:
 
 jobs:
   build:
+    name: Build ARM64 Release APK
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Checkout source
         uses: actions/checkout@v4
 
@@ -23,18 +26,19 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install Gradle
+      - name: Install Gradle 8.9
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.9"
 
-      - name: Build Debug APK
-        run: gradle assembleDebug --stacktrace
+      - name: Build ARM64 Release APK
+        run: gradle assembleRelease --stacktrace
 
-      - name: Upload APK
+      - name: Upload Release APK
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: ShareDL-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: ShareDL-arm64-release
+          path: app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
+          retention-days: 30
